@@ -7,7 +7,13 @@ spring:
     config:
       server:
         native:
-          search-locations: classpath:/config
+          search-locations: ${CONFIG_SEARCH_PATH}
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
 
 server:
   port: 8888
