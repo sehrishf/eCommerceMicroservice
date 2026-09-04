@@ -5,7 +5,9 @@ import com.ecommerce.product.dto.ProductResponse;
 import com.ecommerce.product.model.Product;
 import com.ecommerce.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -21,12 +23,16 @@ public class ProductService {
                 .map(this::mapToResponse)
                 .toList();
     }
-
     public ProductResponse getProduct(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Product not found: " + id
+                ));
+
         return mapToResponse(product);
     }
+
 
     public void createProduct(ProductRequest request) {
         Product product = new Product();
@@ -36,7 +42,11 @@ public class ProductService {
 
     public void updateProduct(Long id, ProductRequest request) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Product not found: " + id
+                ));
+
         updateProductFromRequest(product, request);
         productRepository.save(product);
     }

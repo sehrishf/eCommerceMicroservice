@@ -9,9 +9,10 @@
         <outputRelativeToContentRoot value="true" />
         <module name="FirstSpring" />
         <module name="configserver" />
+        <module name="eureka" />
         <module name="order" />
       </profile>
-      <profile name="Annotation profile for product" enabled="true">
+      <profile name="Annotation profile for user" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -29,6 +30,7 @@
       <module name="FirstSpring" options="-parameters" />
       <module name="configserver" options="-parameters" />
       <module name="ecom-application" options="-parameters" />
+      <module name="eureka" options="-parameters" />
       <module name="order" options="-parameters" />
       <module name="product" options="-parameters" />
       <module name="user" options="-parameters" />
