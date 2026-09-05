@@ -1,4 +1,6 @@
 package com.ecommerce.order.services;
+import com.ecommerce.order.client.UserClient;
+import com.ecommerce.order.client.dto.UserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import com.ecommerce.order.client.ProductClient;
@@ -16,6 +18,7 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final ProductClient productClient;
+    private final UserClient userClient;
 
     public Cart getCart(Long userId) {
 
@@ -27,25 +30,14 @@ public class CartService {
                 });
     }
 
+
     public void addToCart(Long userId, Long productId, Integer qty) {
 
-        ProductResponse product;
+        System.out.println("USER ID RECEIVED BY ORDER SERVICE: " + userId);
 
-        try {
-            product = productClient.getProductById(productId);
-        } catch (HttpClientErrorException.NotFound e) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Product not found: " + productId
-            );
-        }
 
-        if (product == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Product not found: " + productId
-            );
-        }
+        validateUser(userId);
+        validateProduct(productId);
 
         Cart cart = getCart(userId);
 
@@ -58,6 +50,40 @@ public class CartService {
 
         cartRepository.save(cart);
     }
+    private void validateProduct(Long productId) {
+        try {
+            productClient.getProductById(productId);
+        } catch (HttpClientErrorException.NotFound e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Product not found: " + productId
+            );
+        }
+    }
+    private void validateUser(Long userId) {
+
+        System.out.println("CALLING USER SERVICE WITH USER ID: " + userId);
+
+        try {
+            UserResponse user = userClient.getUserById(userId);
+
+            System.out.println("USER RESPONSE: " + user);
+
+            if (user == null) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found: " + userId
+                );
+            }
+
+        } catch (HttpClientErrorException.NotFound e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User not found: " + userId
+            );
+        }
+    }
+
 
 
     public void removeFromCart(Long userId, Long itemId) {

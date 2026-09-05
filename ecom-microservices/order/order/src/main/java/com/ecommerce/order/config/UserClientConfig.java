@@ -1,35 +1,22 @@
 package com.ecommerce.order.config;
 
-import com.ecommerce.order.client.ProductClient;
+import com.ecommerce.order.client.UserClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
-public class ProductClientConfig {
+public class UserClientConfig {
 
     @Bean
-    @Primary
-    public RestClient.Builder restClientBuilder() {
-        return RestClient.builder();
-    }
-
-    @Bean
-    @LoadBalanced
-    public RestClient.Builder loadBalancedRestClientBuilder() {
-        return RestClient.builder();
-    }
-
-    @Bean
-    public ProductClient productClient(
+    public UserClient userClient(
             @LoadBalanced RestClient.Builder restClientBuilder) {
 
         RestClient restClient = restClientBuilder
-                .baseUrl("http://product-service")
+                .baseUrl("http://user-service")
                 .build();
 
         RestClientAdapter adapter =
@@ -40,6 +27,6 @@ public class ProductClientConfig {
                         .builderFor(adapter)
                         .build();
 
-        return factory.createClient(ProductClient.class);
+        return factory.createClient(UserClient.class);
     }
 }
