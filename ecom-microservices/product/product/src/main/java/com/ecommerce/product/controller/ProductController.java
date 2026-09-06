@@ -1,5 +1,6 @@
 package com.ecommerce.product.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import com.ecommerce.product.dto.ProductRequest;
 import com.ecommerce.product.dto.ProductResponse;
 import com.ecommerce.product.services.ProductService;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
@@ -18,6 +20,8 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAll() {
+        log.info("Received request to get products");
+
         return ResponseEntity.ok(productService.getAllProducts());
     }
 

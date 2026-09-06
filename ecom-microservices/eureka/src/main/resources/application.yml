@@ -7,3 +7,9 @@ eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
+logging:
+  file:
+    name: ${LOG_EUREKA}
+
+  level:
+    root: INFO

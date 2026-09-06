@@ -3,6 +3,13 @@ spring:
     name: product-service
   config:
     import: optional:configserver:http://localhost:8888
+logging:
+  file:
+    name: ${LOG_PRODUCT}
+
+  level:
+    root: INFO
+
 
 
 
