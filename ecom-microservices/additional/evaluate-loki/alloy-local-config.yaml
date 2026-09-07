@@ -34,17 +34,38 @@ loki.source.file "system_file_scrape" {
 }
 
 
-local.file_match "loki_app_logs" {
-	path_targets = [{"__path__" = "/logs/*.log"}]
-	sync_period  = "5s"
+	local.file_match "loki_app_logs" {
+	path_targets = [
+	{
+	"__path__" = "/logs-parent/configserver/*.log",
+	"service"  = "configserver",
+	},
+	{
+	"__path__" = "/logs-parent/eureka/*.log",
+	"service"  = "eureka",
+	},
+	{
+	"__path__" = "/logs-parent/order/*.log",
+	"service"  = "order",
+	},
+	{
+	"__path__" = "/logs-parent/product/*.log",
+	"service"  = "product",
+	},
+	{
+	"__path__" = "/logs-parent/user/*.log",
+	"service"  = "user",
+	},
+	]
+	
+	sync_period = "5s"
 }
 
-loki.source.file "loki_app_file_scrape" {
+	loki.source.file "loki_app_file_scrape" {
 	targets       = local.file_match.loki_app_logs.targets
 	forward_to    = [loki.write.default.receiver]
 	tail_from_end = true
 }
-
 
 local.file_match "parent_app_logs" {
 	path_targets = [{"__path__" = "/logs-parent/*.log"}]

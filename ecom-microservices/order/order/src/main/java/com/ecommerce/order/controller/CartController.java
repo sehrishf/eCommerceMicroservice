@@ -1,11 +1,14 @@
 package com.ecommerce.order.controller;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.ecommerce.order.model.Cart;
 import com.ecommerce.order.services.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/cart")
@@ -23,6 +26,8 @@ public class CartController {
             @PathVariable Long userId,
             @PathVariable Long productId,
             @RequestParam Integer qty) {
+
+        log.info("Received request to get adtocart");
 
         cartService.addToCart(userId, productId, qty);
         return ResponseEntity.ok("Item added to cart");

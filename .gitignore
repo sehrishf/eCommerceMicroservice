@@ -1,4 +1,22 @@
+# macOS
+.DS_Store
+
+# IntelliJ
+.idea/
+*.iml
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+.data/
+**/.data/
+
+# Maven
+target/
+
+# Environment
 .env
-*.env
-/config/*.json
-/secrets/
+.env.*
+!.env.example

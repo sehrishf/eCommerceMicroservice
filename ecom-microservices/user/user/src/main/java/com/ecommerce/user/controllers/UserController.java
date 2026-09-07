@@ -1,5 +1,7 @@
 package com.ecommerce.user.controllers;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.ecommerce.user.dto.UserRequest;
 import com.ecommerce.user.dto.UserResponse;
 import com.ecommerce.user.services.UserService;
@@ -11,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -34,6 +37,9 @@ public class UserController {
 
     @GetMapping("/api/user")
     public ResponseEntity<List<UserResponse>> getAllUser(){
+
+        log.info("Received request to get users");
+
         return ResponseEntity.ok(userService.fetchAllUsers());
     }
 
