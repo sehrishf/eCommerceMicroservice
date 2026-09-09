@@ -1,6 +1,7 @@
 package com.ecommerce.order.services;
 import com.ecommerce.order.client.UserClient;
 import com.ecommerce.order.client.dto.UserResponse;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import com.ecommerce.order.client.ProductClient;
@@ -30,8 +31,10 @@ public class CartService {
                 });
     }
 
-
-    public void addToCart(Long userId, Long productId, Integer qty) {
+    @CircuitBreaker(
+            name = "productService",
+            fallbackMethod = "addToCartFallback"
+    )    public void addToCart(Long userId, Long productId, Integer qty) {
 
         System.out.println("USER ID RECEIVED BY ORDER SERVICE: " + userId);
 
@@ -49,6 +52,24 @@ public class CartService {
         cart.getItems().add(item);
 
         cartRepository.save(cart);
+    }
+    private void addToCartFallback(
+            Long userId,
+            Long productId,
+            Integer qty,
+            Throwable throwable
+    ) {
+        System.err.println(
+                "Circuit breaker fallback triggered. " +
+                        "userId=" + userId +
+                        ", productId=" + productId +
+                        ", reason=" + throwable.getMessage()
+        );
+
+        throw new ResponseStatusException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "Unable to add product to cart because a required service is currently unavailable"
+        );
     }
     private void validateProduct(Long productId) {
         try {

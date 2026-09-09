@@ -8,14 +8,29 @@ spring:
               uri: lb://user-service
               predicates:
                 - Path=/api/user,/api/user/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: userServiceCircuitBreaker
+                    fallbackUri: forward:/fallback/user
             - id: product-service
               uri: lb://product-service
               predicates:
                 - Path=/api/products/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: productServiceCircuitBreaker
+                    fallbackUri: forward:/fallback/product
             - id: order-service
               uri: lb://order-service
               predicates:
                 - Path=/api/orders/**,/api/cart/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: orderServiceCircuitBreaker
+                    fallbackUri: forward:/fallback/order
             # Eureka through Gateway
             - id: eureka-dashboard
               uri: http://localhost:8761
@@ -36,13 +51,55 @@ management:
     web:
       exposure:
         include: "*"
-
   endpoint:
+    health:
+      show-details: always
     gateway:
       access: read-only
+  health:
+    circuitbreakers:
+      enabled: true
+
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+    instances:
+      userServiceCircuitBreaker:
+        baseConfig: default
+
+      productServiceCircuitBreaker:
+        baseConfig: default
+
+      orderServiceCircuitBreaker:
+        baseConfig: default
+
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 3s
+
+    instances:
+      userServiceCircuitBreaker:
+        baseConfig: default
+
+      productServiceCircuitBreaker:
+        baseConfig: default
+
+      orderServiceCircuitBreaker:
+        baseConfig: default
