@@ -1,5 +1,8 @@
 package com.ecommerce.order.services;
 
+import com.ecommerce.order.messaging.OrderCreatedEvent;
+import com.ecommerce.order.messaging.OrderEventPublisher;
+import com.ecommerce.order.messaging.OrderItemEvent;
 import com.ecommerce.order.model.Cart;
 import com.ecommerce.order.model.CartItem;
 import com.ecommerce.order.model.Order;
@@ -8,6 +11,7 @@ import com.ecommerce.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +21,8 @@ public class OrderService {
 
     private final CartService cartService;
     private final OrderRepository orderRepository;
+    private final OrderEventPublisher orderEventPublisher;
+
 
     public Order placeOrderOld(Long userId) {
         Cart cart = cartService.getCart(userId);
@@ -74,8 +80,31 @@ public class OrderService {
         // 6. Clear cart
         cart.getItems().clear();
 
-        // 7. Save order (cascade saves order items)
-        return orderRepository.save(order);
+        // 7. Save order
+        Order savedOrder = orderRepository.save(order);
+
+        // 8. Create event items
+        List<OrderItemEvent> eventItems = savedOrder.getItems()
+                .stream()
+                .map(item -> new OrderItemEvent(
+                        item.getProductId(),
+                        item.getQuantity()
+                ))
+                .toList();
+
+        // 9. Create event
+        OrderCreatedEvent event = new OrderCreatedEvent(
+                savedOrder.getId(),
+                savedOrder.getUserId(),
+                BigDecimal.valueOf(savedOrder.getTotalAmount()),
+                eventItems
+        );
+
+        // 10. Send event to RabbitMQ
+        orderEventPublisher.publishOrderCreated(event);
+
+        // 11. Return order
+        return savedOrder;
     }
 
 }

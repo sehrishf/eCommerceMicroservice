@@ -42,7 +42,7 @@ management:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL}
     register-with-eureka: true
     fetch-registry: true
 
@@ -59,3 +59,11 @@ resilience4j:
         minimum-number-of-calls: 5
         slow-call-rate-threshold: 50
         slow-call-duration-threshold: 2s
+
+rabbitmq:
+  exchange:
+    name: order.exchange
+  queue:
+    name: order.queue
+  routing:
+    key: order.tracking
