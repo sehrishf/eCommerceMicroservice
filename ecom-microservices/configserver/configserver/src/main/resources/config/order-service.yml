@@ -19,10 +19,13 @@ spring:
     baseline-on-migrate: true
 
   rabbitmq:
-    host: ${RABBITMQ_HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_USER}
-    password: ${RABBITMQ_PASSWORD}
+    host: ${RABBITMQ_HOST:locahost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:rabbit}
+    password: ${RABBITMQ_PASSWORD:rabbit}
+    virtual-host: ${RABBITMQ_VHOST:rabbit}
+    ssl:
+      enabled: true
 
 server:
   port: 8083
